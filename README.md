@@ -224,11 +224,28 @@ npm run lint
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! We appreciate your interest in improving the LLM Podcast Engine.
+
+Before contributing, please read our [Contributing Guide](CONTRIBUTING.md) which includes:
+- Development setup instructions
+- Code style guidelines
+- Commit message conventions
+- Pull request process
+- Areas where contributions are needed
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and test them
+4. Commit with clear messages following our conventions
+5. Push and create a Pull Request
+
+For detailed information, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
