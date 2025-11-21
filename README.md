@@ -38,7 +38,7 @@ An AI-powered podcast generation engine that scrapes content from URLs, generate
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/koniz-dev/llm-podcast-engine.git
 cd llm-podcast-engine
 ```
 
