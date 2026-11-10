@@ -2,6 +2,14 @@
 
 An AI-powered podcast generation engine that scrapes content from URLs, generates witty tech news scripts using LLM, and converts them to high-quality audio using text-to-speech technology.
 
+> [!IMPORTANT]
+> This project began as an independently written implementation created while
+> following Developers Digest's [Build AI Podcasts from Any Site](https://youtu.be/ievgM928RBc)
+> tutorial and its [original reference repository](https://github.com/developersdigest/llm-podcast-engine).
+> It has since continued as an independently developed project. It is not a fork,
+> an official continuation, or affiliated with or endorsed by Developers Digest.
+> See [NOTICE.md](NOTICE.md) for full attribution and project provenance.
+
 ## Features
 
 - 🔍 **Web Scraping**: Automatically scrapes and extracts content from multiple URLs using Firecrawl
@@ -249,6 +257,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
+- [Developers Digest](https://github.com/developersdigest) for the original
+  [video tutorial](https://youtu.be/ievgM928RBc) and
+  [reference implementation](https://github.com/developersdigest/llm-podcast-engine)
+  that inspired and guided the initial implementation of this project
 - [Groq](https://groq.com/) for fast LLM inference
 - [ElevenLabs](https://elevenlabs.io/) for high-quality text-to-speech
 - [Firecrawl](https://www.firecrawl.dev/) for web scraping capabilities
