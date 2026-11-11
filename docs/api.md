@@ -42,7 +42,7 @@ Content-Type: application/json
 ```
 data: {"type": "update", "message": "Status message"}
 data: {"type": "content", "content": "Script content chunk"}
-data: {"type": "complete", "audioFileName": "2024-01-01T00-00-00-000Z.mp3"}
+data: {"type": "complete", "audioUrl": "https://storage.example.com/podcast.mp3"}
 data: {"type": "error", "message": "Error message"}
 ```
 
@@ -57,8 +57,8 @@ data: {"type": "error", "message": "Error message"}
    - Example: `{"type": "content", "content": "Welcome to today's tech news..."}`
 
 3. **complete**
-   - Generation complete with audio file name
-   - Example: `{"type": "complete", "audioFileName": "2024-01-01T00-00-00-000Z.mp3"}`
+   - Generation complete with a playable audio URL
+   - Example: `{"type": "complete", "audioUrl": "https://storage.example.com/podcast.mp3"}`
 
 4. **error**
    - Error messages
@@ -79,19 +79,18 @@ const response = await fetch('/api/generate-podcast', {
 
 const reader = response.body.getReader()
 const decoder = new TextDecoder()
+let buffer = ''
 
 while (true) {
   const { done, value } = await reader.read()
   if (done) break
-  
-  const chunk = decoder.decode(value)
-  const lines = chunk.split('\n')
-  
-  for (const line of lines) {
-    if (line.startsWith('data: ')) {
-      const data = JSON.parse(line.slice(6))
-      console.log(data)
-    }
+
+  buffer += decoder.decode(value, { stream: true })
+  const events = buffer.split('\n\n')
+  buffer = events.pop() || ''
+  for (const event of events) {
+    const dataLine = event.split('\n').find(line => line.startsWith('data: '))
+    if (dataLine) console.log(JSON.parse(dataLine.slice(6)))
   }
 }
 ```
@@ -109,6 +108,8 @@ curl -X POST http://localhost:3000/api/generate-podcast \
 **Status Codes:**
 - `200`: Stream started successfully
 - `400`: Invalid request body
+- `429`: Per-client generation limit exceeded
+- `503`: Required server configuration is missing
 - `500`: Server error
 
 **Error Responses:**
@@ -182,7 +183,7 @@ curl http://localhost:3000/api/voices
 
 ## Rate Limiting
 
-Currently, there are no rate limits implemented on the API endpoints. However, the underlying services have their own rate limits:
+The generation endpoint includes a local in-memory limit of three requests per client per minute. This protects a single process during development; multi-instance production deployments should replace it with a shared Redis/KV-backed limiter. The underlying services also have their own limits:
 
 - **Groq API**: Rate limits vary by model and tier (free tier has daily/minute limits)
 - **Firecrawl**: Rate limits based on your plan
@@ -199,12 +200,12 @@ All endpoints return appropriate HTTP status codes and error messages. Errors ar
    - Message: API authentication failed
 
 2. **Invalid URLs**
-   - Status: `200` (error in stream)
-   - Message: "No content could be scraped"
+   - Status: `400`
+   - Message: "Only public HTTP(S) URLs are allowed"
 
 3. **Missing Voice ID**
-   - Status: `200` (error in stream)
-   - Message: "Please select a voice before generating the podcast."
+   - Status: `400`
+   - Message: "Required"
 
 4. **Network Errors**
    - Status: `500`
@@ -215,8 +216,8 @@ All endpoints return appropriate HTTP status codes and error messages. Errors ar
 1. **Handle Stream Errors**: Always check for error messages in the SSE stream
 2. **Validate URLs**: Validate URLs client-side before sending to API
 3. **Select Voice First**: Ensure a voice is selected before generating
-4. **Handle Disconnections**: Implement reconnection logic for SSE streams
-5. **Rate Limiting**: Implement client-side rate limiting to avoid hitting service limits
+4. **Handle Disconnections**: Abort the request when the user leaves or cancels
+5. **Rate Limiting**: Respect `RateLimit-*` response headers and back off after `429`
 
 ## WebSocket Alternative
 

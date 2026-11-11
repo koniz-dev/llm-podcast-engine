@@ -36,7 +36,7 @@ An AI-powered podcast generation engine that scrapes content from URLs, generate
 
 ## Prerequisites
 
-- Node.js 18+ or Bun
+- Node.js 20.9+ or Bun 1.3+
 - API keys for:
   - [Groq API](https://console.groq.com/) (for LLM)
   - [Firecrawl](https://www.firecrawl.dev/) (for web scraping)
@@ -61,10 +61,13 @@ bun install
 ```env
 GROQ_API_KEY=your_groq_api_key
 GROQ_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 FIRECRAWL_API_KEY=your_firecrawl_api_key
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 ELEVENLABS_MODEL_ID=eleven_turbo_v2_5
+AUDIO_STORAGE_MODE=local
+# Required only when AUDIO_STORAGE_MODE=vercel-blob
+BLOB_READ_WRITE_TOKEN=
 ```
 
 4. Run the development server:
@@ -82,18 +85,20 @@ bun dev
 |----------|-------------|---------|----------|
 | `GROQ_API_KEY` | Your Groq API key for LLM access | - | Yes |
 | `GROQ_BASE_URL` | Groq API base URL | `https://api.groq.com/openai/v1` | No |
-| `LLM_MODEL` | LLM model to use (see below) | `llama-3.1-8b-instant` | No |
+| `LLM_MODEL` | Groq model used for script generation | `openai/gpt-oss-20b` | No |
 | `FIRECRAWL_API_KEY` | Firecrawl API key for web scraping | - | Yes |
 | `ELEVENLABS_API_KEY` | ElevenLabs API key for TTS | - | Yes |
 | `ELEVENLABS_MODEL_ID` | ElevenLabs model ID | `eleven_turbo_v2_5` | No |
+| `AUDIO_STORAGE_MODE` | `local` for development or `vercel-blob` for durable storage | `local` | No |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob read/write token | - | Only for `vercel-blob` |
 
 ### Available LLM Models
 
 Groq provides several models with different characteristics:
 
-- **llama-3.1-8b-instant**: Fast, small, best for free tier (recommended)
-- **llama-3.1-70b-versatile**: Larger, better quality, may have stricter limits
-- **llama-3.3-70b-versatile**: Latest, may have very strict free limits
+- **openai/gpt-oss-20b**: Fast default suitable for local development and the Groq free tier
+- **openai/gpt-oss-120b**: Higher quality, with a larger resource footprint
+- Check Groq's current model list before choosing another model; model IDs can be retired over time
 
 ## Usage
 
@@ -161,7 +166,7 @@ Generates a podcast from provided URLs.
 **Response:** Server-Sent Events (SSE) stream with the following message types:
 - `update`: Status updates during generation
 - `content`: Script content chunks (streamed)
-- `complete`: Generation complete with audio file name
+- `complete`: Generation complete with the playable audio URL
 - `error`: Error messages
 
 ### GET `/api/voices`
@@ -191,6 +196,14 @@ Fetches available voices from ElevenLabs.
 5. **Streaming**: All steps are streamed to the client for real-time updates
 
 ## Development
+
+### First-time local setup
+
+```bash
+bun run setup:local
+```
+
+Fill in the three API keys in `.env.local`, then start the app. The home screen reports missing configuration without exposing secret values.
 
 ### Build for Production
 

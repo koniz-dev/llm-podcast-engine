@@ -5,7 +5,7 @@ This guide covers deploying the LLM Podcast Engine to various platforms.
 ## Prerequisites
 
 - All environment variables configured (see README.md)
-- Node.js 18+ or Bun installed
+- Node.js 20.9+ or Bun 1.3+ installed
 - Git repository set up
 
 ## Environment Variables
@@ -15,10 +15,12 @@ Ensure all required environment variables are set in your deployment platform:
 ```env
 GROQ_API_KEY=your_groq_api_key
 GROQ_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 FIRECRAWL_API_KEY=your_firecrawl_api_key
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 ELEVENLABS_MODEL_ID=eleven_turbo_v2_5
+AUDIO_STORAGE_MODE=vercel-blob
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
 ```
 
 ## Vercel Deployment
@@ -45,7 +47,7 @@ vercel
 
 ### Important Notes for Vercel:
 
-- **File Storage**: Audio files are saved to the `public/` directory, which is ephemeral on Vercel. Consider using a cloud storage service (S3, Cloudinary) for production.
+- **File Storage**: Create a Vercel Blob store, set `AUDIO_STORAGE_MODE=vercel-blob`, and provide `BLOB_READ_WRITE_TOKEN`. Local storage is intentionally only a development fallback.
 - **Serverless Functions**: API routes run as serverless functions with execution time limits.
 - **Environment Variables**: Set all required environment variables in the Vercel dashboard.
 
@@ -54,7 +56,7 @@ vercel
 ### Create Dockerfile:
 
 ```dockerfile
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -198,13 +200,11 @@ sudo systemctl start podcast-engine
 
 ### File Storage
 
-The current implementation saves audio files to the `public/` directory. For production:
+The storage adapter supports local disk for development and Vercel Blob for durable production audio:
 
-1. **Use Cloud Storage**:
-   - AWS S3
-   - Google Cloud Storage
-   - Cloudinary
-   - Azure Blob Storage
+1. **Use durable storage**:
+   - Set `AUDIO_STORAGE_MODE=vercel-blob` and `BLOB_READ_WRITE_TOKEN` for the built-in adapter.
+   - Implement the `AudioStorage` interface for S3, R2, Google Cloud Storage, or Azure Blob Storage.
 
 2. **Implement Cleanup**:
    - Delete old audio files periodically
@@ -212,11 +212,11 @@ The current implementation saves audio files to the `public/` directory. For pro
 
 ### Rate Limiting
 
-Implement rate limiting to protect your API:
+The built-in in-memory limiter protects a single application process. For horizontally scaled production deployments:
 
-- Use middleware like `express-rate-limit`
-- Or use a service like Cloudflare
-- Consider implementing per-user rate limits
+- Replace the in-memory store with Redis or managed KV.
+- Key limits by authenticated user where possible, with IP as a fallback.
+- Apply account-level quotas for Firecrawl, Groq, and ElevenLabs spend.
 
 ### Monitoring
 
@@ -246,7 +246,7 @@ Set up monitoring and logging:
 
 ### Build Failures
 
-- Check Node.js version (requires 18+)
+- Check Node.js version (requires 20.9+)
 - Verify all dependencies are installed
 - Check for TypeScript errors
 

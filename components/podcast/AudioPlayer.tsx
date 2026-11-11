@@ -1,75 +1,45 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { motion } from 'framer-motion'
-import { Download, Loader, Pause, Play } from "lucide-react"
+import { Download, Loader2 } from "lucide-react"
 
 export interface AudioPlayerProps {
   audioRef: React.RefObject<HTMLAudioElement | null>
   audioSrc: string
-  isPlaying: boolean
   isAudioLoading: boolean
-  onTogglePlayPause: () => void
   onDownload: () => void
+  onLoadStart: () => void
   onLoadedData: () => void
 }
 
-export const AudioPlayer = ({
-  audioRef,
-  audioSrc,
-  isPlaying,
-  isAudioLoading,
-  onTogglePlayPause,
-  onDownload,
-  onLoadedData,
-}: AudioPlayerProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-    className="space-y-2"
-  >
-    <audio
-      ref={audioRef}
-      src={audioSrc}
-      className="w-full"
-      controls
-      onLoadedData={onLoadedData}
-    />
-    
-    <div className="flex space-x-2">
-      <Button
-        onClick={onTogglePlayPause}
-        className="flex-grow bg-gradient-to-r from-orange-500 to-black text-white font-light"
-        disabled={isAudioLoading}
-      >
-        {isAudioLoading ? (
-          <>
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-            Loading Audio
-          </>
-        ) : isPlaying ? (
-          <>
-            <Pause className="mr-2 h-4 w-4" />
-            Pause Audio
-          </>
-        ) : (
-          <>
-            <Play className="mr-2 h-4 w-4" />
-            Play Audio
-          </>
-        )}
-      </Button>
-      
-      <Button
-        onClick={onDownload}
-        className="bg-orange-500 hover:bg-orange-600 text-black"
-        disabled={isAudioLoading}
-      >
-        <Download className="h-4 w-4 mr-2" />
-        Download
+export const AudioPlayer = ({ audioRef, audioSrc, isAudioLoading, onDownload, onLoadStart, onLoadedData }: AudioPlayerProps) => (
+  <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+    <div className="mb-2 flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium text-white">Your episode</p>
+        <p className="text-xs text-slate-500">Generated locally and ready to play.</p>
+      </div>
+      <Button type="button" variant="ghost" size="sm" onClick={onDownload} disabled={isAudioLoading} className="text-slate-400 hover:bg-white/5 hover:text-white">
+        <Download className="mr-1.5 h-4 w-4" /> Download
       </Button>
     </div>
-  </motion.div>
+    <div className="relative">
+      <audio
+        ref={audioRef}
+        key={audioSrc}
+        src={audioSrc}
+        className="h-10 w-full accent-orange-500"
+        controls
+        preload="metadata"
+        onLoadStart={onLoadStart}
+        onLoadedData={onLoadedData}
+      />
+      {isAudioLoading && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-[#151922] text-xs text-slate-400">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin text-orange-400" /> Loading audio…
+        </div>
+      )}
+    </div>
+  </div>
 )
 

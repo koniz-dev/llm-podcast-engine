@@ -2,6 +2,8 @@
 
 Get up and running with the LLM Podcast Engine in 5 minutes!
 
+Requires Node.js 20.9+ or Bun 1.3+.
+
 ## Step 1: Clone and Install
 
 ```bash
@@ -35,13 +37,16 @@ Create a `.env.local` file in the root directory:
 ```env
 GROQ_API_KEY=your_groq_api_key_here
 GROQ_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 FIRECRAWL_API_KEY=your_firecrawl_api_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ELEVENLABS_MODEL_ID=eleven_turbo_v2_5
+AUDIO_STORAGE_MODE=local
 ```
 
 Replace the placeholder values with your actual API keys.
+
+Local mode writes generated audio to `public/generated` and cleans files older than 24 hours. Configure Vercel Blob only when preparing a production deployment.
 
 ## Step 4: Run the Development Server
 

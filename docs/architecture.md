@@ -75,7 +75,7 @@ The LLM Podcast Engine is a Next.js application that combines web scraping, AI-p
 3. Scrapes URLs using Firecrawl
 4. Generates script using Groq LLM (streamed)
 5. Converts script to audio using ElevenLabs
-6. Saves audio file to `public/` directory
+6. Saves audio through the configured storage adapter (local development or Vercel Blob)
 7. Streams updates to client throughout the process
 
 **Stream Message Types:**
@@ -163,7 +163,7 @@ llm-podcast-engine/
 ├── types/                        # TypeScript types
 │   └── podcast.ts
 │
-└── public/                       # Static files + generated audio
+└── public/                       # Static files; local generated audio is ignored by Git
 ```
 
 ## Key Technologies
@@ -205,13 +205,14 @@ llm-podcast-engine/
 - Improves user experience
 
 ### Audio Generation
-- Audio files are saved to `public/` directory
-- Files are served statically after generation
-- Consider cleanup strategy for old files
+- Local development audio is saved under `public/generated` and expires after 24 hours
+- Production audio can be stored durably with the Vercel Blob adapter
+- The client receives a storage-independent audio URL
 
 ### Rate Limiting
+- The generation endpoint applies a per-client in-memory limit for single-instance protection
 - Groq API has rate limits (especially on free tier)
-- Consider implementing retry logic
+- Production multi-instance deployments should use a shared Redis/KV limiter
 - May need to queue requests for high-volume usage
 
 ## Security Considerations
@@ -223,12 +224,11 @@ llm-podcast-engine/
 
 ### URL Validation
 - Client-side URL validation before sending to API
-- Server-side validation recommended for production
+- Server-side validation enforces public HTTP(S) URLs, request size limits, and voice ID shape
 
 ### File Storage
-- Audio files stored in `public/` directory
-- Consider implementing file cleanup
-- May want to use cloud storage for production
+- Local audio is automatically cleaned up after 24 hours
+- Production should use the durable object-storage adapter
 
 ## Future Improvements
 
@@ -238,8 +238,7 @@ llm-podcast-engine/
 4. **Custom Prompts**: Allow users to customize script style
 5. **Audio Editing**: Add intro/outro music
 6. **RSS Feed**: Generate RSS feeds for podcast distribution
-7. **File Cleanup**: Automatic cleanup of old audio files
-8. **Error Recovery**: Retry logic for failed API calls
-9. **Caching**: Cache scraped content to reduce API calls
-10. **Analytics**: Track usage and popular URLs
+7. **Error Recovery**: Retry logic for failed API calls
+8. **Caching**: Cache scraped content to reduce API calls
+9. **Analytics**: Track usage and popular URLs
 

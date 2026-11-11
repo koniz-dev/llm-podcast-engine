@@ -2,7 +2,7 @@ export interface StreamMessage {
   type: 'update' | 'content' | 'complete' | 'error'
   message?: string
   content?: string
-  audioFileName?: string
+  audioUrl?: string
 }
 
 export interface PodcastState {
@@ -16,7 +16,7 @@ export interface PodcastState {
 
 export interface RequestBody {
   urls: string[]
-  voiceId?: string
+  voiceId: string
 }
 
 export type UrlMode = 'single' | 'multiple'
@@ -26,5 +26,12 @@ export interface Voice {
   name: string
   category?: string
   description?: string
+}
+
+export interface AppStatus {
+  ready: boolean
+  missingVariables: string[]
+  storageMode: string
+  model: string
 }
 
