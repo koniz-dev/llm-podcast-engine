@@ -2,11 +2,11 @@ import FirecrawlApp from "@mendable/firecrawl-js"
 import { ElevenLabsClient } from "elevenlabs"
 import OpenAI from "openai"
 import type { ServerConfig } from "./config"
-import { buildPodcastMessages } from "./prompt"
+import { buildPodcastMessages, type PodcastPromptOptions } from "./prompt"
 
 export interface PodcastProviders {
   scrape(url: string): Promise<string>
-  streamScript(sourceMaterial: string, currentDate: string, signal: AbortSignal, onChunk: (content: string) => void): Promise<string>
+  streamScript(sourceMaterial: string, currentDate: string, signal: AbortSignal, onChunk: (content: string) => void, promptOptions?: PodcastPromptOptions): Promise<string>
   synthesize(text: string, voiceId: string, signal: AbortSignal): Promise<Buffer>
 }
 
@@ -25,10 +25,10 @@ export function createPodcastProviders(config: ServerConfig): PodcastProviders {
       return "markdown" in result && typeof result.markdown === "string" ? result.markdown : ""
     },
 
-    async streamScript(sourceMaterial, currentDate, signal, onChunk) {
+    async streamScript(sourceMaterial, currentDate, signal, onChunk, promptOptions) {
       throwIfAborted(signal)
       const stream = await openai.chat.completions.create({
-        messages: buildPodcastMessages(sourceMaterial, currentDate),
+        messages: buildPodcastMessages(sourceMaterial, currentDate, promptOptions),
         model: config.LLM_MODEL,
         stream: true,
       }, { signal })

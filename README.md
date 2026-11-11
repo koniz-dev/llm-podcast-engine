@@ -20,6 +20,7 @@ An AI-powered podcast generation engine that scrapes content from URLs, generate
 - 🎵 **Audio Player**: Built-in audio player with play/pause and download functionality
 - 🔄 **Real-time Streaming**: Live updates during podcast generation process
 - 🎭 **Voice Selection**: Choose from multiple ElevenLabs voices
+- 🧩 **Codex Skill + CLI**: Generate transcripts or MP3 files without starting the web app
 
 ## Tech Stack
 
@@ -101,6 +102,29 @@ Groq provides several models with different characteristics:
 - Check Groq's current model list before choosing another model; model IDs can be retired over time
 
 ## Usage
+
+### Local CLI and Codex skill
+
+The CLI uses the same providers and prompt safety rules as the web app, but does not require `npm run dev`:
+
+```bash
+# Preview the transcript without using ElevenLabs quota
+npm run podcast -- --url "https://example.com/article" --script-only
+
+# Create a short Vietnamese MP3 with a named voice
+npm run podcast -- --url "https://example.com/article" --voice "Adam" --duration 2 --language Vietnamese
+
+# Inspect available voices
+npm run podcast -- --list-voices
+```
+
+Outputs are written to `output/podcasts` and ignored by Git. The versioned Codex skill source is in `skills/create-podcast`.
+
+Install or refresh the personal Codex skill with:
+
+```bash
+npm run skill:install
+```
 
 ### Single URL Mode
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Podcast"
+  short_description: "Turn article URLs into local podcast audio"
+  default_prompt: "Use $create-podcast to turn these article URLs into a local podcast."
