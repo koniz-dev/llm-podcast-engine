@@ -24,7 +24,7 @@ export function LocalStatus() {
   }, [refresh])
 
   if (loading && !status) {
-    return <div className="h-10 animate-pulse rounded-xl border border-white/10 bg-white/5" />
+    return <div className="h-10 animate-pulse rounded-xl border border-white/[0.07] bg-white/[0.035]" />
   }
 
   if (!status) {
@@ -59,14 +59,14 @@ export function LocalStatus() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-4 py-2.5 text-xs text-slate-300">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-2.5 text-xs text-stone-300">
       <span className="flex items-center gap-2 text-emerald-300">
         <CheckCircle2 className="h-4 w-4" /> Local configuration found
       </span>
       <span className="flex items-center gap-2">
-        <HardDrive className="h-4 w-4 text-slate-500" /> {status.storageMode} storage
+        <HardDrive className="h-4 w-4 text-stone-600" /> {status.storageMode} storage
       </span>
-      <span className="truncate text-slate-500">{status.model}</span>
+      <span className="truncate text-stone-600">{status.model}</span>
     </div>
   )
 }

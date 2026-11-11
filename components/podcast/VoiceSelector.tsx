@@ -58,17 +58,17 @@ export const VoiceSelector = ({ selectedVoiceId, onVoiceChange }: VoiceSelectorP
 
   if (isLoading && voices.length === 0) {
     return (
-      <div className="flex h-11 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-slate-500">
-        <Loader2 className="h-4 w-4 animate-spin text-orange-400" /> Loading ElevenLabs voices…
+      <div className="flex h-12 items-center gap-2 rounded-xl border border-white/[0.08] bg-black/20 px-3 text-sm text-stone-500">
+        <Loader2 className="h-4 w-4 animate-spin text-orange-300" /> Loading narrator voices…
       </div>
     )
   }
 
   if (needsApiKey) {
     return (
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-sm text-slate-500">
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 text-sm text-stone-500">
         <span className="flex items-center gap-2"><KeyRound className="h-4 w-4 text-amber-400/70" /> Add ELEVENLABS_API_KEY to choose a voice</span>
-        <Button type="button" variant="ghost" size="sm" onClick={fetchVoices} className="h-8 shrink-0 text-slate-500 hover:bg-white/5 hover:text-white">
+        <Button type="button" variant="ghost" size="sm" onClick={fetchVoices} className="h-8 shrink-0 text-stone-500 hover:bg-white/5 hover:text-white">
           <RefreshCw className="h-3.5 w-3.5" /><span className="sr-only">Retry</span>
         </Button>
       </div>
@@ -91,20 +91,20 @@ export const VoiceSelector = ({ selectedVoiceId, onVoiceChange }: VoiceSelectorP
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <label className="text-sm font-medium text-slate-300">Narrator voice</label>
-        <span className="text-xs text-slate-600">{voices.length} available</span>
+        <label className="flex items-center gap-2 text-sm font-medium text-stone-300"><span className="grid h-5 w-5 place-items-center rounded-full border border-orange-300/20 text-[10px] text-orange-300">2</span> Narrator voice</label>
+        <span className="text-xs text-stone-600">{voices.length} available</span>
       </div>
       <Select value={selectedVoiceId || undefined} onValueChange={onVoiceChange} disabled={voices.length === 0 || isLoading}>
-        <SelectTrigger className="h-11 w-full border-white/10 bg-black/25 text-white hover:bg-white/5 focus:ring-orange-400/20">
+        <SelectTrigger className="h-12 w-full rounded-xl border-white/[0.09] bg-black/25 px-4 text-white hover:bg-white/5 focus:ring-orange-300/20">
           <SelectValue placeholder="Select a voice">
             {selectedVoice ? selectedVoice.name : 'Select a voice'}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="max-w-[min(32rem,calc(100vw-2rem))] border-white/10 bg-[#151922] text-white">
+        <SelectContent className="max-w-[min(32rem,calc(100vw-2rem))] border-white/10 bg-[#1a1915] text-white shadow-2xl">
           {voices.map((voice) => (
             <SelectItem key={voice.voice_id} value={voice.voice_id} className="focus:bg-white/10 focus:text-white">
               <span className="font-medium">{voice.name}</span>
-              {voice.description ? <span className="ml-2 text-xs text-slate-500">{voice.description}</span> : null}
+              {voice.description ? <span className="ml-2 text-xs text-stone-500">{voice.description}</span> : null}
             </SelectItem>
           ))}
         </SelectContent>

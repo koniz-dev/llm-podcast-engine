@@ -1,7 +1,7 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
 import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowUpRight, FileAudio, Sparkles, WandSparkles } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Header } from "@/components/podcast/Header"
 import { LocalStatus } from "@/components/podcast/LocalStatus"
@@ -93,14 +93,40 @@ export default function Home() {
   }, [audioSrc])
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#07090d] text-white [background-image:radial-gradient(circle_at_15%_0%,rgba(249,115,22,0.16),transparent_30%),radial-gradient(circle_at_85%_15%,rgba(59,130,246,0.08),transparent_28%)]">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#090907] text-white">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -left-48 -top-48 h-[32rem] w-[32rem] rounded-full bg-orange-500/[0.12] blur-[120px]" />
+        <div className="absolute -right-48 top-1/3 h-[30rem] w-[30rem] rounded-full bg-amber-200/[0.06] blur-[140px]" />
+        <div className="noise-overlay absolute inset-0 opacity-[0.035]" />
+      </div>
       <Header title="Podcast Engine" />
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <main className="relative mx-auto w-full max-w-[1440px] px-4 pb-10 pt-6 sm:px-6 lg:px-10 lg:pt-8">
+        <section className="mb-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-orange-300">
+              <Sparkles className="h-3.5 w-3.5" /> AI audio workspace
+            </div>
+            <h2 className="max-w-3xl text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl lg:text-[2.75rem] lg:leading-[1.08]">
+              Turn the stories you save into <span className="text-orange-300">episodes worth hearing.</span>
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-400 sm:text-base">
+              Bring an article, pick a narrator, and let the engine shape it into a polished listening experience.
+            </p>
+          </div>
+          <div className="hidden items-center gap-5 pb-1 text-xs text-stone-500 md:flex">
+            <span className="flex items-center gap-2"><span className="font-mono text-orange-300">01</span> Add sources</span>
+            <span className="h-px w-7 bg-white/10" />
+            <span className="flex items-center gap-2"><span className="font-mono text-orange-300">02</span> Choose voice</span>
+            <span className="h-px w-7 bg-white/10" />
+            <span className="flex items-center gap-2"><span className="font-mono text-orange-300">03</span> Listen</span>
+          </div>
+        </section>
+
         <LocalStatus />
 
-        <Card className="mt-4 overflow-hidden rounded-2xl border-white/10 bg-[#0d1117]/90 shadow-2xl shadow-black/40 backdrop-blur-xl">
-          <CardContent className="flex min-h-[34rem] w-full flex-col gap-5 !p-4 sm:!p-6 lg:h-[calc(100vh-11.5rem)] lg:min-h-[38rem] lg:flex-row lg:gap-6">
+        <div className="mt-4 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-[#11110e]/90 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+          <div className="flex min-h-[36rem] w-full flex-col gap-4 p-3 sm:p-4 lg:h-[min(48rem,calc(100vh-15rem))] lg:min-h-[40rem] lg:flex-row">
             <UrlInputSection
               mode={mode}
               urls={urls}
@@ -143,18 +169,28 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="hidden flex-1 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] lg:flex"
+                  className="relative hidden flex-1 items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/[0.07] bg-[#0c0c0a] lg:flex"
                 >
-                  <div className="max-w-xs text-center">
-                    <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-orange-500/10 text-2xl">🎧</div>
-                    <p className="text-sm font-medium text-slate-300">Your episode will appear here</p>
-                    <p className="mt-2 text-xs leading-5 text-slate-500">Add a source, choose a voice, then let the local pipeline do the rest.</p>
+                  <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-orange-500/[0.06] to-transparent" />
+                  <div className="relative max-w-sm px-8 text-center">
+                    <div className="relative mx-auto mb-7 h-28 w-28">
+                      <div className="absolute inset-0 rounded-full border border-orange-300/10" />
+                      <div className="absolute inset-3 rounded-full border border-dashed border-orange-300/20 motion-safe:animate-[spin_18s_linear_infinite]" />
+                      <div className="absolute inset-7 grid place-items-center rounded-full bg-orange-300 text-[#17120b] shadow-[0_0_50px_rgba(253,186,116,0.2)]">
+                        <FileAudio className="h-7 w-7" />
+                      </div>
+                    </div>
+                    <p className="text-lg font-medium tracking-tight text-stone-100">Your listening room is ready</p>
+                    <p className="mt-2 text-sm leading-6 text-stone-500">Add a source and select a voice. Your script and finished episode will unfold here in real time.</p>
+                    <div className="mt-6 inline-flex items-center gap-2 text-xs font-medium text-orange-300/80">
+                      <WandSparkles className="h-3.5 w-3.5" /> Waiting for your first story <ArrowUpRight className="h-3.5 w-3.5" />
+                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
     </div>
   )
