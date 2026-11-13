@@ -14,4 +14,4 @@ try {
   console.log("Created .env.local from .env.example.")
 }
 
-console.log("Add your Firecrawl, Groq, and ElevenLabs API keys, then run: bun dev")
+console.log("Add Firecrawl and Groq keys for transcripts; add ElevenLabs only for audio or the web app.")

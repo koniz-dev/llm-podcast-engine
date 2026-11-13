@@ -20,7 +20,7 @@ An AI-powered podcast generation engine that scrapes content from URLs, generate
 - 🎵 **Audio Player**: Built-in audio player with play/pause and download functionality
 - 🔄 **Real-time Streaming**: Live updates during podcast generation process
 - 🎭 **Voice Selection**: Choose from multiple ElevenLabs voices
-- 🧩 **Codex Skill + CLI**: Generate transcripts or MP3 files without starting the web app
+- 🧩 **Portable agent skill + CLI**: Prefer built-in agent tools, with the repository CLI as a local fallback
 
 ## Tech Stack
 
@@ -38,10 +38,10 @@ An AI-powered podcast generation engine that scrapes content from URLs, generate
 ## Prerequisites
 
 - Node.js 20.9+ or Bun 1.3+
-- API keys for:
-  - [Groq API](https://console.groq.com/) (for LLM)
-  - [Firecrawl](https://www.firecrawl.dev/) (for web scraping)
-  - [ElevenLabs](https://elevenlabs.io/) (for text-to-speech)
+- Local provider keys for [Groq](https://console.groq.com/) and [Firecrawl](https://www.firecrawl.dev/)
+- An [ElevenLabs](https://elevenlabs.io/) key only when using local voice listing or MP3 generation
+
+The portable skill does not require these local providers when the agent environment already has equivalent URL-reading and text-to-speech capabilities.
 
 ## Installation
 
@@ -88,7 +88,7 @@ bun dev
 | `GROQ_BASE_URL` | Groq API base URL | `https://api.groq.com/openai/v1` | No |
 | `LLM_MODEL` | Groq model used for script generation | `openai/gpt-oss-20b` | No |
 | `FIRECRAWL_API_KEY` | Firecrawl API key for web scraping | - | Yes |
-| `ELEVENLABS_API_KEY` | ElevenLabs API key for TTS | - | Yes |
+| `ELEVENLABS_API_KEY` | ElevenLabs API key for TTS | - | Only for voice listing or audio |
 | `ELEVENLABS_MODEL_ID` | ElevenLabs model ID | `eleven_turbo_v2_5` | No |
 | `AUDIO_STORAGE_MODE` | `local` for development or `vercel-blob` for durable storage | `local` | No |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob read/write token | - | Only for `vercel-blob` |
@@ -103,22 +103,27 @@ Groq provides several models with different characteristics:
 
 ## Usage
 
-### Local CLI and Codex skill
+### Agent skill and local CLI
 
-The CLI uses the same providers and prompt safety rules as the web app, but does not require `npm run dev`:
+The versioned skill in `skills/create-podcast` accepts 1–5 public article URLs. It first uses available agent-native URL reading, language-model, and text-to-speech capabilities. It does not require a checkout or local API keys in that mode. When those capabilities are unavailable, it can use this checkout's CLI without starting Next.js.
+
+Transcript is the safe, no-TTS default:
 
 ```bash
-# Preview the transcript without using ElevenLabs quota
-npm run podcast -- --url "https://example.com/article" --script-only
+# Create a transcript without using ElevenLabs quota
+npm run podcast -- --url "https://example.com/article"
 
-# Create a short Vietnamese MP3 with a named voice
-npm run podcast -- --url "https://example.com/article" --voice "Adam" --duration 2 --language Vietnamese
+# Combine sources with presentation controls
+npm run podcast -- --url "https://example.com/a" --url "https://example.com/b" --duration 3 --language Vietnamese --style "calm science host"
+
+# Explicitly request a short Vietnamese MP3 with a named voice
+npm run podcast -- --url "https://example.com/article" --audio --voice "Adam" --duration 2 --language Vietnamese
 
 # Inspect available voices
 npm run podcast -- --list-voices
 ```
 
-Outputs are written to `output/podcasts` and ignored by Git. The versioned Codex skill source is in `skills/create-podcast`.
+The CLI accepts `--output-dir <path>` and emits JSON with absolute file paths plus used and failed source lists. Outputs default to `output/podcasts` and are ignored by Git. Failed individual URLs do not stop generation when another source succeeds.
 
 Install or refresh the personal Codex skill with:
 
@@ -227,7 +232,7 @@ Fetches available voices from ElevenLabs.
 bun run setup:local
 ```
 
-Fill in the three API keys in `.env.local`, then start the app. The home screen reports missing configuration without exposing secret values.
+For the web app, fill in all three provider keys in `.env.local`, then start it. For transcript-only CLI use, ElevenLabs is not required. The home screen reports missing web-app configuration without exposing secret values.
 
 ### Build for Production
 

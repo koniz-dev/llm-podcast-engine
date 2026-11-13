@@ -5,7 +5,7 @@ import type { ServerConfig } from "./config"
 import { buildPodcastMessages, type PodcastPromptOptions } from "./prompt"
 
 export interface PodcastProviders {
-  scrape(url: string): Promise<string>
+  scrape(url: string, signal?: AbortSignal): Promise<string>
   streamScript(sourceMaterial: string, currentDate: string, signal: AbortSignal, onChunk: (content: string) => void, promptOptions?: PodcastPromptOptions): Promise<string>
   synthesize(text: string, voiceId: string, signal: AbortSignal): Promise<Buffer>
 }
@@ -20,8 +20,10 @@ export function createPodcastProviders(config: ServerConfig): PodcastProviders {
   const elevenLabs = new ElevenLabsClient({ apiKey: config.ELEVENLABS_API_KEY })
 
   return {
-    async scrape(url) {
+    async scrape(url, signal) {
+      if (signal) throwIfAborted(signal)
       const result = await firecrawl.scrape(url, { formats: ["markdown"] })
+      if (signal) throwIfAborted(signal)
       return "markdown" in result && typeof result.markdown === "string" ? result.markdown : ""
     },
 
